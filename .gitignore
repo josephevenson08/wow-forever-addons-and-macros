@@ -1,6 +1,9 @@
 # Build output from scripts/package.ps1
 dist/
 
+# Sprite previews from scripts/build-art.js
+art/**/preview/
+
 # Editor / OS junk
 .DS_Store
 Thumbs.db

@@ -35,8 +35,9 @@ addons/<Name>/          one folder per addon; folder name == TOC name
   <Name>.toc
   Core.lua
 templates/AddonTemplate source for new addons (tokens like __ADDON__)
-scripts/                new-addon.ps1, link-addons.ps1, package.ps1
-docs/                   API notes and research
+art/<set>/              text pixel-art sources (built into addon media)
+scripts/                new-addon.ps1, link-addons.ps1, package.ps1, build-art.js
+docs/                   API notes, research, design drafts
 ```
 
 ## Conventions
@@ -57,6 +58,11 @@ docs/                   API notes and research
   admin needed). Then `/reload` in game picks up Lua edits. New files or TOC
   changes need a full client restart.
 - Package: `.\scripts\package.ps1` → `dist\<Name>-<Version>.zip`.
+- Pixel art: text grids in `art/<set>/*.txt` are the source. Build with
+  `node scripts/build-art.js art/<set> addons/<Name>/media` → TGA sprite
+  sheets (power-of-two) + `Sprites.lua`, and 8x PNG previews in
+  `art/<set>/preview/` (git-ignored) to eyeball the result. Draw textures
+  with `SetTexture(path, nil, nil, "NEAREST")` so pixels stay crisp.
 - There is no Lua interpreter or game in this environment. Testing happens in
   game: ask the user to `/reload` and report what they see. Turn on Lua errors
   with `/console scriptErrors 1`.

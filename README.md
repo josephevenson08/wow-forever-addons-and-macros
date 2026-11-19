@@ -6,7 +6,7 @@ Addons for World of Warcraft: Forever (interface 16001).
 
 | Addon | What it does | Slash |
 | ----- | ------------ | ----- |
-| _none yet_ | | |
+| [Wyvern Wits](addons/WyvernWits) | Reverse-trivia minigame on flight paths: rarer valid answers send an 8-bit Thrall diving deeper. | `/wits` |
 
 ## Install (players)
 
