@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: __TITLE__
+## Notes: __NOTES__
+## Author: __AUTHOR__
+## Version: 0.1.0
+## SavedVariables: __ADDON__DB
+## IconTexture: Interface\Icons\INV_Misc_QuestionMark
+## AddonCompartmentFunc: __ADDON__Compartment_OnClick
+
+Core.lua

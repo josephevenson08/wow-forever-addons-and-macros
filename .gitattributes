@@ -1,0 +1,14 @@
+# Normalize line endings in the repo; WoW reads LF or CRLF fine.
+* text=auto eol=lf
+
+# PowerShell scripts keep CRLF so Windows PowerShell 5.1 is happy.
+*.ps1 text eol=crlf
+
+# Binary assets
+*.tga binary
+*.blp binary
+*.png binary
+*.ogg binary
+*.mp3 binary
+*.ttf binary
+*.zip binary
