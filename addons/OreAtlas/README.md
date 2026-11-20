@@ -12,10 +12,6 @@ icons show every node of that ore.
 
 Interface 16001 (WoW Forever). Version 0.3.0.
 
-<img src="../../docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
-
-_The pane at Mining 142. This is a preview rendered from the addon's own layout and data. Real in-game screenshots will replace it once it's been tested._
-
 ## Install
 
 Copy the `OreAtlas` folder into

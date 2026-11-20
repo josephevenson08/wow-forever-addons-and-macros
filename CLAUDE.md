@@ -1,6 +1,6 @@
-# WoW Forever addons
+# WoW Forever addons and macros
 
-Addons for **WoW Forever**: Blizzard's level-60 original-Azeroth mode that
+Addons and macro guides for **WoW Forever**: Blizzard's level-60 original-Azeroth mode that
 runs on the modern Mainline (Midnight) client. Not Classic Era, not a private
 server.
 
@@ -40,6 +40,8 @@ tracking, professions, map/quest helpers, cosmetic UI.
 addons/<Name>/          one folder per addon; folder name == TOC name
   <Name>.toc
   Core.lua
+macros/<class>/         macro guides (README.md per class); tag each macro
+                        Forever, Classic, or Both; keep each under 255 chars
 templates/AddonTemplate source for new addons (tokens like __ADDON__)
 art/<set>/              text pixel-art sources (built into addon media)
 scripts/                new-addon.ps1, link-addons.ps1, package.ps1, build-art.js

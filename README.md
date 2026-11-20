@@ -1,7 +1,21 @@
-# WoW Forever Addons
+# WoW Forever Addons and Macros
 
-Addons for World of Warcraft: Forever, Blizzard's level-60 original-Azeroth
-mode on the modern client (interface 16001).
+Addons and macros for World of Warcraft: Forever, Blizzard's level-60
+original-Azeroth mode on the modern client (interface 16001), with notes
+for Classic WoW where things differ.
+
+## Macros
+
+| Class | What's there |
+| ----- | ------------ |
+| [Warrior](macros/warrior/README.md) | 30+ macros for stance dancing, PvE tanking and DPS, and PvP, each tagged Forever, Classic, or Both |
+
+The big Forever difference for warriors: a macro that swaps stance and then
+casts needs **two presses** on Forever (one press in Classic). The warrior
+guide explains this and is written around it. See [macros/](macros/README.md)
+for how to add a macro in game.
+
+## Addons
 
 | Addon | What it does | Open with | Version |
 | ----- | ------------ | --------- | ------- |
@@ -48,10 +62,6 @@ from Copper to Forever's new Heavy Thorium. It pairs with GatherMate2:
 GatherMate2 shows every node on the map, and Ore Atlas tells you which ore to
 chase and where.
 
-<img src="docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
-
-_Preview rendered from the addon's own layout and data. Real in-game screenshots will replace these once it's been tested._
-
 - **Live Mining skill:** the header shows your rank, trainer hints like
   "Capped at 150. Train Expert…", and skill-ups this session.
 - **Best now:** the ore to mine at your skill and where to find it.
@@ -81,8 +91,8 @@ is only needed to rebuild pixel art. VS Code with the recommended extensions
 (Lua + WoW API) gives autocomplete for the game API.
 
 ```powershell
-git clone https://github.com/josephevenson08/wowforeveraddons.git
-cd wowforeveraddons
+git clone https://github.com/josephevenson08/wow-forever-addons-and-macros.git
+cd wow-forever-addons-and-macros
 
 # Create a new addon from the template and link it into the game
 .\scripts\new-addon.ps1 -Name MyAddon -Title "My Addon" -Slash myaddon -Notes "What it does." -Link
@@ -108,6 +118,7 @@ full restart. Turn on error popups with `/console scriptErrors 1`.
 
 ```
 addons/<Name>/            one folder per addon (folder name = TOC name), each with a README
+macros/<class>/           macro guides, one README per class
 templates/AddonTemplate/  starting point for new addons
 art/                      text pixel-art sources for sprites
 scripts/                  new-addon, link-addons, package, build-art
