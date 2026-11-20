@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: Ore Atlas
-## Notes: Where to mine every ore, which ores still give skill, ore areas on the world map, and your Mining progress.
+## Notes: Your Mining leveling guide: which ores still give skill, where to find them, and your progress. Pairs with GatherMate2.
 ## Author: Joseph Evenson
-## Version: 0.2.1
+## Version: 0.3.0
 ## SavedVariables: OreAtlasDB
 ## OptionalDeps: GatherMate2, GatherMate2_Data
 ## IconTexture: Interface\Icons\Trade_Mining
@@ -13,5 +13,4 @@ Data.lua
 Skill.lua
 Maps.lua
 Nodes.lua
-MapOverlay.lua
 UI.lua

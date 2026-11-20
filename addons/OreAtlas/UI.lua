@@ -3,11 +3,11 @@
 
 local _, ns = ...
 
-local UI = { filter = "all", cards = {} }
+local UI = { cards = {} }
 ns.UI = UI
 
 local W, H = 410, 580
-local SCROLL_TOP = 172
+local SCROLL_TOP = 146
 local CARD_W = W - 42          -- scroll area width (scrollbar sits to the right)
 local BAR_W = CARD_W - 16
 local GOLD = { 0.95, 0.76, 0.31 }
@@ -159,33 +159,6 @@ local function LayoutZones(card)
     card:SetHeight(-y + 18 + 8)
 end
 
--- "On map" / "Off map" switch in the card's corner.
-local function MapToggle(card)
-    local ore = card.ore
-    local button = CreateFrame("Button", nil, card)
-    button:SetSize(64, 18)
-    button:SetPoint("TOPRIGHT", -8, -8)
-    Solid(button, "BACKGROUND", 0.16, 0.125, 0.086):SetAllPoints()
-    Border(button, 0.35, 0.27, 0.19)
-    Solid(button, "HIGHLIGHT", 1, 0.85, 0.5, 0.15):SetAllPoints()
-    button.text = Font(button, 11)
-    button.text:SetPoint("CENTER")
-    button:SetScript("OnClick", function()
-        ns.db.mapOres[ore.key] = not ns.ShowOnMap(ore)
-        UI:Refresh()
-        ns.MapOverlay:Refresh()
-    end)
-    button:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("Show on the world map")
-        GameTooltip:AddLine("Shades this ore's areas on the world map in its color for you.", 1, 1, 1, true)
-        GameTooltip:AddLine("By default the map shows ores that still give you skill-ups. "
-            .. "Clicking pins your choice; /ore map auto goes back to the default.", MUTED[1], MUTED[2], MUTED[3], true)
-        GameTooltip:Show()
-    end)
-    button:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    return button
-end
 
 local function CreateCard(parent, ore)
     local card = CreateFrame("Frame", nil, parent)
@@ -255,7 +228,6 @@ local function CreateCard(parent, ore)
     -- because real node counts can change while you play
     card.zoneTop = y
     card.zoneButtons = {}
-    card.mapToggle = MapToggle(card)
     LayoutZones(card)
     return card
 end
@@ -280,12 +252,6 @@ function UI:UpdateCard(card, skill, effective)
         card.marker:Hide()
     end
     card:SetAlpha((color == "red" or color == "gray") and 0.6 or 1)
-
-    if ns.ShowOnMap(ore) then
-        card.mapToggle.text:SetText(Colored("f2c14e", "On map"))
-    else
-        card.mapToggle.text:SetText(Colored("a89878", "Off map"))
-    end
     LayoutZones(card)
     return color
 end
@@ -294,30 +260,8 @@ end
 -- The pane
 ---------------------------------------------------------------------------
 
-local function FilterButton(parent, label, key)
-    local button = CreateFrame("Button", nil, parent)
-    button:SetHeight(20)
-    local bg = Solid(button, "BACKGROUND", 0.16, 0.125, 0.086)
-    bg:SetAllPoints()
-    Border(button, 0.35, 0.27, 0.19)
-    local hl = Solid(button, "HIGHLIGHT", 1, 0.85, 0.5, 0.15)
-    hl:SetAllPoints()
-    button.text = Font(button, 12)
-    button.text:SetPoint("CENTER")
-    button.text:SetText(label)
-    button:SetWidth(math.ceil(button.text:GetStringWidth()) + 20)
-    button.key = key
-    button:SetScript("OnClick", function()
-        UI.filter = key
-        ns.db.filter = key
-        UI:Refresh()
-    end)
-    return button
-end
-
 function UI:Create()
     if self.frame then return self.frame end
-    self.filter = ns.db.filter or "all"
 
     local f = CreateFrame("Frame", "OreAtlasFrame", UIParent)
     f:SetSize(W, H)
@@ -375,11 +319,6 @@ function UI:Create()
     self.alts:SetPoint("TOPLEFT", 14, -124)
     self.alts:SetWidth(W - 28)
     self.alts:SetWordWrap(false)
-
-    self.filterAll = FilterButton(f, "All ores", "all")
-    self.filterAll:SetPoint("TOPLEFT", 14, -144)
-    self.filterUseful = FilterButton(f, "Useful for me", "useful")
-    self.filterUseful:SetPoint("LEFT", self.filterAll, "RIGHT", 6, 0)
 
     -- scrolling ore list
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", "OreAtlasScroll", f, "UIPanelScrollFrameTemplate")
@@ -474,33 +413,20 @@ function UI:Refresh()
     end
     self.alts:SetText(#alts > 0 and ("Other miners: " .. table.concat(alts, ", ")) or "")
 
-    if ns.Nodes:HasGatherMate() or ns.Nodes:OwnTotal() > 0 then
-        self.legend:SetText("Numbers = known nodes    " .. Colored("f2c14e", "Gold") .. " = named by Forever guides")
+    if ns.Nodes:HasGatherMate() then
+        self.legend:SetText("Numbers = GatherMate2 nodes. Click a zone to see them on the map.")
     else
         self.legend:SetText(Colored("f2c14e", "Gold") .. " = named by Forever guides    * = densest (classic data)")
     end
 
-    for _, button in ipairs({ self.filterAll, self.filterUseful }) do
-        local on = button.key == self.filter
-        button.text:SetTextColor(on and GOLD[1] or MUTED[1], on and GOLD[2] or MUTED[2], on and GOLD[3] or MUTED[3])
-    end
-
-    -- cards
+    -- cards, every ore, in order of required skill
     local y = 0
     for _, card in ipairs(self.cards) do
-        local c = self:UpdateCard(card, skill, effective)
-        local show = self.filter ~= "useful" or not skill or card.ore.always
-            or c == "orange" or c == "yellow" or c == "green"
-        if show then
-            card:ClearAllPoints()
-            card:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -y)
-            card.offset = y
-            card:Show()
-            y = y + card:GetHeight() + 6
-        else
-            card:Hide()
-            card.offset = nil
-        end
+        self:UpdateCard(card, skill, effective)
+        card:ClearAllPoints()
+        card:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -y)
+        card.offset = y
+        y = y + card:GetHeight() + 6
     end
     self.content:SetHeight(math.max(1, y))
     self:ScrollTo(self.scroll:GetVerticalScroll())

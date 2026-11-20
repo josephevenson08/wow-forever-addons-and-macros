@@ -6,7 +6,7 @@ mode on the modern client (interface 16001).
 | Addon | What it does | Open with | Version |
 | ----- | ------------ | --------- | ------- |
 | [Wyvern Wits](addons/WyvernWits) | Reverse-trivia minigame on flight paths: rarer valid answers send an 8-bit Thrall diving deeper | `/wits`, or it opens on takeoff | 0.1.0 |
-| [Ore Atlas](addons/OreAtlas) | Mining reference: every ore's skill colors, where to find it, ore areas on the world map, and your Mining progress | `/ore` | 0.2.1 |
+| [Ore Atlas](addons/OreAtlas) | Mining leveling guide: every ore's skill colors, where to find it, and your Mining progress. Pairs with GatherMate2 | `/ore` | 0.3.0 |
 
 Neither addon has been tested in game yet. If you hit a Lua error, turn on
 `/console scriptErrors 1` and open an issue with the error text.
@@ -43,8 +43,10 @@ _Preview rendered from the addon's own sprite, colors and layout. Real in-game s
 
 ## Ore Atlas
 
-One scrollable pane with every ore you can mine, from Copper to Forever's
-new Heavy Thorium.
+Your Mining leveling guide: one scrollable pane with every ore you can mine,
+from Copper to Forever's new Heavy Thorium. It pairs with GatherMate2:
+GatherMate2 shows every node on the map, and Ore Atlas tells you which ore to
+chase and where.
 
 <img src="docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
 
@@ -55,14 +57,10 @@ _Preview rendered from the addon's own layout and data. Real in-game screenshots
 - **Best now:** the ore to mine at your skill and where to find it.
 - **Ore cards:** each one has a color bar for its orange, yellow, green and
   gray ranges, with a marker at your skill, plus the exact thresholds.
-- **Zone buttons:** each shows the zone's level range. Click one to open the
-  world map there. Zones named by Forever guides are shown apart from classic
-  spawn data.
-- **Ore areas on the world map:** zones are shaded where ore spawns, in
-  each ore's color for your skill, with a button on the map to turn it on
-  or off. Node data comes from GatherMate2 if you have it installed (read
-  from your own install, never copied), plus every spot you mine yourself.
-- **"Useful for me" filter:** hides ores that are gray or too high for you.
+- **Zone buttons:** with GatherMate2 installed, each card lists the zones
+  where that ore really spawns, busiest first, with node counts (read from
+  your own install, never copied). Click a zone and the world map opens
+  there with GatherMate2's node icons.
 - **Alts and alerts:** your other characters' Mining levels, and chat
   alerts when your best ore changes.
 - **Commands:** `/ore` to open it, `/ore alerts off` to turn off alerts,

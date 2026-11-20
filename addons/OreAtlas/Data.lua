@@ -144,7 +144,7 @@ Zone("Zul'Gurub", "raid", nil, { inside = "Stranglethorn Vale" })
 -- Ores, in order of required skill.
 --   minor      quest ore with only a few nodes
 --   rare       spawns in place of a common vein; never the "best" pick
---   always     shown even when the "Useful for me" filter is on
+--   always     special case (endgame or above the cap); never the "best" pick
 --   variants   other node names that count as this ore (for GatherMate2
 --              data and for recording what you mine)
 ---------------------------------------------------------------------------
@@ -331,16 +331,4 @@ end
 function ns.OreForNodeName(name)
     if type(name) ~= "string" or (issecretvalue and issecretvalue(name)) then return nil end
     return NODE_NAMES[name:lower()]
-end
-
--- Whether an ore's areas are drawn on the world map. The player can pin
--- each ore on or off; otherwise we show ores that still give skill-ups.
-function ns.ShowOnMap(ore)
-    local pick = ns.db.mapOres[ore.key]
-    if pick ~= nil then return pick end
-    if ore.always then return true end
-    local S = ns.Skill
-    if not S.known then return not (ore.minor or ore.rare) end
-    local color = ns.ColorFor(ore, S.rank, S:Effective())
-    return color == "orange" or color == "yellow" or color == "green"
 end
