@@ -8,6 +8,14 @@ Elemental Plane.
 
 Interface 16001 (WoW Forever). Version 0.1.0.
 
+<p>
+  <img src="../../docs/screenshots/wyvern-wits-ready.png" width="32%" alt="Takeoff: the window opens with the route and a Start button">
+  <img src="../../docs/screenshots/wyvern-wits-round.png" width="32%" alt="Mid-game: a Molten Core prompt with Thrall diving past canyon walls">
+  <img src="../../docs/screenshots/wyvern-wits-reveal.png" width="32%" alt="Reveal: a Far Seer answer, deep in Ragefire">
+</p>
+
+_Takeoff, a round, and a reveal. These are previews rendered from the addon's own sprite, colors and layout. Real in-game screenshots will replace them once it's been tested._
+
 ## Install
 
 Copy the `WyvernWits` folder into

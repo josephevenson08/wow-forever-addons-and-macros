@@ -19,6 +19,13 @@ counts, but rarer ones score more. Every point drops Thrall on his wind
 rider 10 yards deeper: through the clouds, over Durotar, down the canyons,
 through Ragefire and the molten core.
 
+<p>
+  <img src="docs/screenshots/wyvern-wits-round.png" width="49%" alt="Wyvern Wits mid-game: a Molten Core prompt with Thrall diving past canyon walls">
+  <img src="docs/screenshots/wyvern-wits-reveal.png" width="49%" alt="Wyvern Wits reveal: a Far Seer answer, deep in Ragefire">
+</p>
+
+_Preview rendered from the addon's own sprite, colors and layout. Real in-game screenshots will replace these once it's been tested._
+
 - **Five tiers:** Peon 10, Grunt 25, Blademaster 45, Far Seer 70,
   Warchief 100.
 - **No penalty for wrong guesses:** keep trying until the timer runs out.
@@ -38,6 +45,10 @@ through Ragefire and the molten core.
 
 One scrollable pane with every ore you can mine, from Copper to Forever's
 new Heavy Thorium.
+
+<img src="docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
+
+_Preview rendered from the addon's own layout and data. Real in-game screenshots will replace these once it's been tested._
 
 - **Live Mining skill:** the header shows your rank, trainer hints like
   "Capped at 150. Train Expert…", and skill-ups this session.
