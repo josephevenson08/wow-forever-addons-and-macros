@@ -6,7 +6,7 @@ Addons for World of Warcraft: Forever (interface 16001).
 
 | Addon | What it does | Slash |
 | ----- | ------------ | ----- |
-| _none yet_ | | |
+| [Ore Atlas](addons/OreAtlas) | Scrollable mining reference: every ore's skill colors, the zones to find it in, and your Mining progress. | `/ore` |
 
 ## Install (players)
 
