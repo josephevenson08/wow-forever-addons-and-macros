@@ -7,6 +7,7 @@ Addons for World of Warcraft: Forever (interface 16001).
 | Addon | What it does | Slash |
 | ----- | ------------ | ----- |
 | [Wyvern Wits](addons/WyvernWits) | Reverse-trivia minigame on flight paths: rarer valid answers send an 8-bit Thrall diving deeper. | `/wits` |
+| [Ore Atlas](addons/OreAtlas) | Scrollable mining reference: every ore's skill colors, the zones to find it in, and your Mining progress. | `/ore` |
 
 ## Install (players)
 
