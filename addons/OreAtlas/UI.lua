@@ -66,38 +66,124 @@ local function ZoneLabel(zone)
     return label
 end
 
-local function ZoneButton(card, zone)
-    local button = CreateFrame("Button", nil, card)
-    button:SetHeight(18)
-    local bg = Solid(button, "BACKGROUND", 0.16, 0.125, 0.086)
-    bg:SetAllPoints()
-    Border(button, 0.35, 0.27, 0.19)
-    local hl = Solid(button, "HIGHLIGHT", 1, 0.85, 0.5, 0.15)
-    hl:SetAllPoints()
-    local text = Font(button, 11, zone.forever and GOLD or TAN)
-    text:SetPoint("LEFT", 6, 0)
-    text:SetText(ZoneLabel(zone))
-    button:SetWidth(math.ceil(text:GetStringWidth()) + 12)
+-- Zone buttons for an ore: real node counts (busiest first) when node data
+-- exists, otherwise the researched zone list from Data.lua.
+-- Each entry: { name, mapID?, label, color, lines = { {text, r, g, b}, ... } }
+local function ZoneEntries(ore)
+    local entries = {}
+    local data = ns.Nodes:ZonesFor(ore.key)
+    if data then
+        for i, zone in ipairs(data) do
+            if i > 12 then break end
+            local info = ns.ZONES[zone.name]
+            local lines = { { zone.count .. " known nodes", 1, 1, 1 } }
+            if info and info.levels and not info.inside and not info.new then
+                lines[#lines + 1] = { "Levels " .. info.levels, 1, 1, 1 }
+            end
+            lines[#lines + 1] = { "From GatherMate2 data and spots you've mined", MUTED[1], MUTED[2], MUTED[3] }
+            entries[#entries + 1] = { name = zone.name, mapID = zone.mapID, label = zone.name .. "  " .. zone.count,
+                                      color = TAN, lines = lines }
+        end
+        return entries
+    end
 
-    button:SetScript("OnClick", function() ns.Maps:Open(zone.name) end)
-    button:SetScript("OnEnter", function(self)
-        local data = ns.ZONES[zone.name] or {}
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine(zone.name)
-        if data.inside then
-            GameTooltip:AddLine("Inside " .. data.inside, 1, 1, 1)
-        elseif data.new then
-            GameTooltip:AddLine("New WoW Forever zone", 1, 1, 1)
-        elseif data.levels then
-            GameTooltip:AddLine("Levels " .. data.levels, 1, 1, 1)
+    for _, zone in ipairs(ore.zones) do
+        local info = ns.ZONES[zone.name] or {}
+        local lines = {}
+        if info.inside then
+            lines[#lines + 1] = { "Inside " .. info.inside, 1, 1, 1 }
+        elseif info.new then
+            lines[#lines + 1] = { "New WoW Forever zone", 1, 1, 1 }
+        elseif info.levels then
+            lines[#lines + 1] = { "Levels " .. info.levels, 1, 1, 1 }
         end
         if zone.forever then
-            GameTooltip:AddLine("Named by WoW Forever mining guides", GOLD[1], GOLD[2], GOLD[3])
+            lines[#lines + 1] = { "Named by WoW Forever mining guides", GOLD[1], GOLD[2], GOLD[3] }
         else
-            GameTooltip:AddLine("From classic spawn data", MUTED[1], MUTED[2], MUTED[3])
+            lines[#lines + 1] = { "From classic spawn data", MUTED[1], MUTED[2], MUTED[3] }
         end
-        if zone.dense then GameTooltip:AddLine("One of the densest zones for this ore", 1, 1, 1) end
+        if zone.dense then lines[#lines + 1] = { "One of the densest zones for this ore", 1, 1, 1 } end
+        entries[#entries + 1] = { name = zone.name, label = ZoneLabel(zone),
+                                  color = zone.forever and GOLD or TAN, lines = lines }
+    end
+    return entries
+end
+
+local function ZoneButton(card)
+    local button = CreateFrame("Button", nil, card)
+    button:SetHeight(18)
+    Solid(button, "BACKGROUND", 0.16, 0.125, 0.086):SetAllPoints()
+    Border(button, 0.35, 0.27, 0.19)
+    Solid(button, "HIGHLIGHT", 1, 0.85, 0.5, 0.15):SetAllPoints()
+    button.text = Font(button, 11)
+    button.text:SetPoint("LEFT", 6, 0)
+
+    button:SetScript("OnClick", function(self)
+        local entry = self.entry
+        if entry.mapID then ns.Maps:OpenID(entry.mapID) else ns.Maps:Open(entry.name) end
+    end)
+    button:SetScript("OnEnter", function(self)
+        local entry = self.entry
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(entry.name)
+        for _, line in ipairs(entry.lines) do GameTooltip:AddLine(line[1], line[2], line[3], line[4]) end
         GameTooltip:AddLine("Click to open the map", 0.5, 1, 0.5)
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    return button
+end
+
+-- Lay the card's zone buttons out in wrapped rows and size the card to fit.
+local function LayoutZones(card)
+    local entries = ZoneEntries(card.ore)
+    local x, y = 8, card.zoneTop
+    for i, entry in ipairs(entries) do
+        local button = card.zoneButtons[i]
+        if not button then
+            button = ZoneButton(card)
+            card.zoneButtons[i] = button
+        end
+        button.entry = entry
+        button.text:SetText(entry.label)
+        button.text:SetTextColor(entry.color[1], entry.color[2], entry.color[3])
+        local w = math.ceil(button.text:GetStringWidth()) + 12
+        button:SetWidth(w)
+        if x + w > CARD_W - 8 and x > 8 then
+            x = 8
+            y = y - 22
+        end
+        button:ClearAllPoints()
+        button:SetPoint("TOPLEFT", x, y)
+        button:Show()
+        x = x + w + 4
+    end
+    for i = #entries + 1, #card.zoneButtons do card.zoneButtons[i]:Hide() end
+    card:SetHeight(-y + 18 + 8)
+end
+
+-- "On map" / "Off map" switch in the card's corner.
+local function MapToggle(card)
+    local ore = card.ore
+    local button = CreateFrame("Button", nil, card)
+    button:SetSize(64, 18)
+    button:SetPoint("TOPRIGHT", -8, -8)
+    Solid(button, "BACKGROUND", 0.16, 0.125, 0.086):SetAllPoints()
+    Border(button, 0.35, 0.27, 0.19)
+    Solid(button, "HIGHLIGHT", 1, 0.85, 0.5, 0.15):SetAllPoints()
+    button.text = Font(button, 11)
+    button.text:SetPoint("CENTER")
+    button:SetScript("OnClick", function()
+        ns.db.mapOres[ore.key] = not ns.ShowOnMap(ore)
+        UI:Refresh()
+        ns.MapOverlay:Refresh()
+    end)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Show on the world map")
+        GameTooltip:AddLine("Shades this ore's areas on the world map in its color for you.", 1, 1, 1, true)
+        GameTooltip:AddLine("By default the map shows ores that still give you skill-ups. "
+            .. "Clicking pins your choice; /ore map auto goes back to the default.", MUTED[1], MUTED[2], MUTED[3], true)
         GameTooltip:Show()
     end)
     button:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -168,19 +254,12 @@ local function CreateCard(parent, ore)
         y = y - math.ceil(notes:GetStringHeight()) - 6
     end
 
-    -- zone buttons, wrapped into rows
-    local x = 8
-    for _, zone in ipairs(ore.zones) do
-        local button = ZoneButton(card, zone)
-        local w = button:GetWidth()
-        if x + w > CARD_W - 8 and x > 8 then
-            x = 8
-            y = y - 22
-        end
-        button:SetPoint("TOPLEFT", x, y)
-        x = x + w + 4
-    end
-    card:SetHeight(-y + 18 + 8)
+    -- zone buttons are laid out (and the card sized) on every refresh,
+    -- because real node counts can change while you play
+    card.zoneTop = y
+    card.zoneButtons = {}
+    card.mapToggle = MapToggle(card)
+    LayoutZones(card)
     return card
 end
 
@@ -204,6 +283,13 @@ function UI:UpdateCard(card, skill, effective)
         card.marker:Hide()
     end
     card:SetAlpha((color == "red" or color == "gray") and 0.6 or 1)
+
+    if ns.ShowOnMap(ore) then
+        card.mapToggle.text:SetText(Colored("f2c14e", "On map"))
+    else
+        card.mapToggle.text:SetText(Colored("a89878", "Off map"))
+    end
+    LayoutZones(card)
     return color
 end
 
@@ -316,9 +402,10 @@ function UI:Create()
         self.cards[#self.cards + 1] = CreateCard(content, ore)
     end
 
-    local legend = Font(f, 11, MUTED)
-    legend:SetPoint("BOTTOMLEFT", 14, 10)
-    legend:SetText(Colored("f2c14e", "Gold") .. " = named by Forever guides    * = densest (classic data)")
+    self.legend = Font(f, 11, MUTED)
+    self.legend:SetPoint("BOTTOMLEFT", 14, 10)
+    self.legend:SetWidth(W - 28)
+    self.legend:SetWordWrap(false)
 
     f:SetScript("OnShow", function() UI:Refresh() end)
     f:Hide()
@@ -390,6 +477,12 @@ function UI:Refresh()
     end
     self.alts:SetText(#alts > 0 and ("Other miners: " .. table.concat(alts, ", ")) or "")
 
+    if ns.Nodes:HasGatherMate() or ns.Nodes:OwnTotal() > 0 then
+        self.legend:SetText("Zone numbers = known nodes (GatherMate2 + your mining)")
+    else
+        self.legend:SetText(Colored("f2c14e", "Gold") .. " = named by Forever guides    * = densest (classic data)")
+    end
+
     for _, button in ipairs({ self.filterAll, self.filterUseful }) do
         local on = button.key == self.filter
         button.text:SetTextColor(on and GOLD[1] or MUTED[1], on and GOLD[2] or MUTED[2], on and GOLD[3] or MUTED[3])
@@ -421,6 +514,7 @@ function UI:Toggle()
     if f:IsShown() then
         f:Hide()
     else
+        ns.Nodes.dirty = true   -- pick up GatherMate2 imports since last time
         f:Show()
         self:ScrollToBest()
     end

@@ -68,14 +68,9 @@ function Maps:Find(zoneName)
     end
 end
 
-function Maps:Open(zoneName)
+function Maps:OpenID(id)
     if InCombatLockdown() then
         ns.Print("Can't open the map in combat.")
-        return
-    end
-    local id = self:Find(zoneName)
-    if not id then
-        ns.Print("Couldn't find " .. zoneName .. " on the world map.")
         return
     end
     if C_Map.OpenWorldMap then
@@ -84,6 +79,15 @@ function Maps:Open(zoneName)
         if not WorldMapFrame:IsShown() then ToggleWorldMap() end
         WorldMapFrame:SetMapID(id)
     end
+end
+
+function Maps:Open(zoneName)
+    local id = self:Find(zoneName)
+    if not id then
+        ns.Print("Couldn't find " .. zoneName .. " on the world map.")
+        return
+    end
+    self:OpenID(id)
 end
 
 -- Zone names from our data that the map lookup can't resolve.

@@ -6,7 +6,7 @@ mode on the modern client (interface 16001).
 | Addon | What it does | Open with | Version |
 | ----- | ------------ | --------- | ------- |
 | [Wyvern Wits](addons/WyvernWits) | Reverse-trivia minigame on flight paths: rarer valid answers send an 8-bit Thrall diving deeper | `/wits`, or it opens on takeoff | 0.1.0 |
-| [Ore Atlas](addons/OreAtlas) | Mining reference: every ore's skill colors, where to find it, and your Mining progress | `/ore` | 0.1.0 |
+| [Ore Atlas](addons/OreAtlas) | Mining reference: every ore's skill colors, where to find it, ore areas on the world map, and your Mining progress | `/ore` | 0.2.0 |
 
 Neither addon has been tested in game yet. If you hit a Lua error, turn on
 `/console scriptErrors 1` and open an issue with the error text.
@@ -58,6 +58,10 @@ _Preview rendered from the addon's own layout and data. Real in-game screenshots
 - **Zone buttons:** each shows the zone's level range. Click one to open the
   world map there. Zones named by Forever guides are shown apart from classic
   spawn data.
+- **Ore areas on the world map:** zones are shaded where ore spawns, in
+  each ore's color for your skill, with a button on the map to turn it on
+  or off. Node data comes from GatherMate2 if you have it installed (read
+  from your own install, never copied), plus every spot you mine yourself.
 - **"Useful for me" filter:** hides ores that are gray or too high for you.
 - **Alts and alerts:** your other characters' Mining levels, and chat
   alerts when your best ore changes.

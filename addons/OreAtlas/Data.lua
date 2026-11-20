@@ -143,6 +143,8 @@ Zone("Zul'Gurub", "raid", nil, { inside = "Stranglethorn Vale" })
 --   minor      quest ore with only a few nodes
 --   rare       spawns in place of a common vein; never the "best" pick
 --   always     shown even when the "Useful for me" filter is on
+--   variants   other node names that count as this ore (for GatherMate2
+--              data and for recording what you mine)
 ---------------------------------------------------------------------------
 
 local ORES = {}
@@ -167,6 +169,7 @@ end
 
 Ore {
     key = "copper", name = "Copper Vein", ore = "Copper Ore", item = 2770, req = 1,
+    variants = { "Poor Copper Vein" },
     zones = { "Durotar|d", "Mulgore|f", "Elwynn Forest|f", "Dun Morogh|f", "Tirisfal Glades|f", "Teldrassil|f",
               "Zephras Isle|f", "Westfall|d", "Loch Modan", "Silverpine Forest", "Darkshore", "The Barrens|f",
               "Redridge Mountains|f", "Duskwood", "Stonetalon Mountains" },
@@ -190,6 +193,7 @@ Ore {
 
 Ore {
     key = "silver", name = "Silver Vein", ore = "Silver Ore", item = 2775, req = 75, rare = true,
+    variants = { "Ooze Covered Silver Vein" },
     zones = { "Arathi Highlands|d", "Wetlands|f", "Alterac Mountains", "Stranglethorn Vale",
               "Hillsbrad Foothills|f", "Thousand Needles|f", "The Barrens|f", "Loch Modan", "Duskwood",
               "Silverpine Forest|f", "Westfall|f" },
@@ -205,6 +209,7 @@ Ore {
 
 Ore {
     key = "iron", name = "Iron Deposit", ore = "Iron Ore", item = 2772, req = 125,
+    variants = { "Ooze Covered Iron Deposit" },
     zones = { "Arathi Highlands|df", "Alterac Mountains", "Stranglethorn Vale|f", "Thousand Needles|f",
               "Desolace|f", "Duskwood", "Badlands", "Dustwallow Marsh", "Feralas", "Swamp of Sorrows",
               "Riverglades|f" },
@@ -220,6 +225,7 @@ Ore {
 
 Ore {
     key = "gold", name = "Gold Vein", ore = "Gold Ore", item = 2776, req = 155, rare = true,
+    variants = { "Ooze Covered Gold Vein" },
     zones = { "Arathi Highlands|df", "Stranglethorn Vale|f", "Badlands|f", "Alterac Mountains",
               "The Hinterlands", "Blasted Lands|f", "Felwood|f", "Desolace", "Dustwallow Marsh", "Tanaris",
               "Feralas" },
@@ -228,6 +234,7 @@ Ore {
 
 Ore {
     key = "mithril", name = "Mithril Deposit", ore = "Mithril Ore", item = 3858, req = 175,
+    variants = { "Ooze Covered Mithril Deposit" },
     zones = { "The Hinterlands|df", "Alterac Mountains", "Badlands|f", "Searing Gorge|f", "Tanaris|f",
               "Stranglethorn Vale", "Azshara|f", "Blasted Lands|f", "Felwood|f", "Desolace|f", "Feralas",
               "Burning Steppes" },
@@ -236,6 +243,7 @@ Ore {
 
 Ore {
     key = "truesilver", name = "Truesilver Deposit", ore = "Truesilver Ore", item = 7911, req = 230, rare = true,
+    variants = { "Ooze Covered Truesilver Deposit" },
     zones = { "The Hinterlands|df", "Burning Steppes|f", "Badlands", "Searing Gorge", "Eastern Plaguelands",
               "Winterspring|f", "Blasted Lands|f", "Felwood|f", "Tanaris", "Un'Goro Crater" },
     notes = "Rare: spawns in place of Mithril and Thorium. Ooze Covered Truesilver in Silithus, Un'Goro and Feralas.",
@@ -249,6 +257,7 @@ Ore {
 
 Ore {
     key = "thorium", name = "Small Thorium Vein", ore = "Thorium Ore", item = 10620, req = 245,
+    variants = { "Ooze Covered Thorium Vein" },
     zones = { "Silithus|df", "Un'Goro Crater|f", "Burning Steppes|f", "Tanaris", "Western Plaguelands|f",
               "Eastern Plaguelands|f", "Felwood|f", "Winterspring|f", "Blasted Lands|f", "Azshara", "Feralas",
               "The Hinterlands" },
@@ -257,6 +266,7 @@ Ore {
 
 Ore {
     key = "richthorium", name = "Rich Thorium Vein", ore = "Thorium Ore", item = 10620, req = 275,
+    variants = { "Ooze Covered Rich Thorium Vein", "Hakkari Thorium Vein" },
     zones = { "Eastern Plaguelands|df", "Winterspring|f", "Azshara|f", "Burning Steppes", "Silithus",
               "Un'Goro Crater", "Western Plaguelands|f", "Zul'Gurub" },
     notes = "Ooze Covered Rich Thorium in Silithus, Hakkari Thorium in Zul'Gurub. "
@@ -273,6 +283,7 @@ Ore {
 
 Ore {
     key = "obsidian", name = "Obsidian Chunk", ore = "Small and Large Obsidian Shards", item = 22202, req = 305,
+    variants = { "Small Obsidian Chunk", "Large Obsidian Chunk" },
     always = true,
     zones = { "Ahn'Qiraj" },
     notes = "Inside the Ahn'Qiraj raids. Needs 305, so you need +Mining gear such as the Goblin Mining Helmet.",
@@ -293,9 +304,41 @@ function ns.BestOre(skill, effective)
     end
 end
 
--- "Arathi Highlands, Alterac Mountains, Stranglethorn Vale"
+-- "Arathi Highlands, Alterac Mountains, Stranglethorn Vale". Uses real
+-- node counts (busiest first) when node data is available.
 function ns.TopZones(ore, count)
+    local list = (ns.Nodes and ns.Nodes:ZonesFor(ore.key)) or ore.zones
     local names = {}
-    for i = 1, math.min(count, #ore.zones) do names[i] = ore.zones[i].name end
+    for i = 1, math.min(count, #list) do names[i] = list[i].name end
     return table.concat(names, ", ")
+end
+
+---------------------------------------------------------------------------
+-- Lookups
+---------------------------------------------------------------------------
+
+ns.ORE_BY_KEY = {}
+local NODE_NAMES = {}
+for _, ore in ipairs(ORES) do
+    ns.ORE_BY_KEY[ore.key] = ore
+    NODE_NAMES[ore.name:lower()] = ore
+    for _, name in ipairs(ore.variants or {}) do NODE_NAMES[name:lower()] = ore end
+end
+
+-- "Ooze Covered Gold Vein" -> the Gold Vein ore, or nil if it isn't ore.
+function ns.OreForNodeName(name)
+    if type(name) ~= "string" or (issecretvalue and issecretvalue(name)) then return nil end
+    return NODE_NAMES[name:lower()]
+end
+
+-- Whether an ore's areas are drawn on the world map. The player can pin
+-- each ore on or off; otherwise we show ores that still give skill-ups.
+function ns.ShowOnMap(ore)
+    local pick = ns.db.mapOres[ore.key]
+    if pick ~= nil then return pick end
+    if ore.always then return true end
+    local S = ns.Skill
+    if not S.known then return not (ore.minor or ore.rare) end
+    local color = ns.ColorFor(ore, S.rank, S:Effective())
+    return color == "orange" or color == "yellow" or color == "green"
 end

@@ -13,7 +13,10 @@ local defaults = {
     filter = "all",     -- "all" or "useful"
     alerts = true,      -- chat message when your best ore or rank changes
     scale = 1,
+    mapOverlay = true,  -- shade ore areas on the world map
+    mapOres = {},       -- [oreKey] = true/false when the player pinned it on or off
     chars = {},         -- ["Name-Realm"] = { name, class, known, rank, max, updated }
+    mined = {},         -- [uiMapID][oreKey] = { coord, ... } spots you've mined
 }
 
 ---------------------------------------------------------------------------
@@ -66,15 +69,19 @@ local function ReadSkill()
 end
 
 function handlers.ADDON_LOADED(name)
-    if name ~= ADDON_NAME then return end
-    ns.UnregisterEvent("ADDON_LOADED")
-
-    OreAtlasDB = OreAtlasDB or {}
-    ApplyDefaults(OreAtlasDB, defaults)
-    ns.db = OreAtlasDB
+    if name == ADDON_NAME then
+        OreAtlasDB = OreAtlasDB or {}
+        ApplyDefaults(OreAtlasDB, defaults)
+        ns.db = OreAtlasDB
+    elseif name == "Blizzard_WorldMap" and ns.db then
+        -- in case the world map loads on demand after login
+        ns.MapOverlay:Init()
+    end
 end
 
 function handlers.PLAYER_LOGIN()
+    ns.MapOverlay:Init()
+    ns.Nodes:HookGatherMate()
     ns.loggingIn = true
     ReadSkill()
     -- profession data can arrive a moment after login
@@ -106,6 +113,7 @@ ns.RegisterEvent("CHAT_MSG_SKILL")
 
 function ns.OnSkillChanged(before, now)
     if ns.UI.frame then ns.UI:Refresh() end
+    ns.MapOverlay:Refresh()
     if ns.loggingIn or not ns.db.alerts or not now.known or not before.known then return end
 
     local oldBest = ns.BestOre(before.rank, before.rank)
@@ -128,6 +136,7 @@ local commands = {}
 function commands.help()
     ns.Print("commands:")
     print("  /ore - open or close the atlas")
+    print("  /ore map [on|off|auto] - ore areas on the world map; auto forgets your per-ore picks")
     print("  /ore alerts [on|off] - chat alerts when your best ore changes")
     print("  /ore scale 0.9 - window size")
     print("  /ore debug - show what the game reports for Mining and the map")
@@ -148,6 +157,25 @@ function commands.alerts(arg)
         ns.db.alerts = not ns.db.alerts
     end
     ns.Print("alerts " .. (ns.db.alerts and "on" or "off"))
+end
+
+function commands.map(arg)
+    arg = (arg or ""):lower()
+    if arg == "auto" then
+        wipe(ns.db.mapOres)
+        ns.Print("map shows ores that still give you skill-ups again.")
+    else
+        if arg == "on" then
+            ns.db.mapOverlay = true
+        elseif arg == "off" then
+            ns.db.mapOverlay = false
+        else
+            ns.db.mapOverlay = not ns.db.mapOverlay
+        end
+        ns.Print("ore areas on the world map " .. (ns.db.mapOverlay and "on" or "off"))
+    end
+    ns.MapOverlay:Refresh()
+    if ns.UI.frame then ns.UI:Refresh() end
 end
 
 function commands.scale(arg)
@@ -186,10 +214,29 @@ function commands.debug()
     print(format("  Map zones indexed: %d", ns.Maps.count or 0))
     local missing = ns.Maps:Unresolved()
     print("  Zones not found on the map: " .. (#missing > 0 and table.concat(missing, ", ") or "none"))
+
+    ns.Nodes.dirty = true
+    local counts = ns.Nodes:Counts()
+    print(format("  GatherMate2: %s. Nodes known: %d (you mined %d).",
+        ns.Nodes:HasGatherMate() and "found" or "not loaded", ns.Nodes.total or 0, ns.Nodes:OwnTotal()))
+    local perOre = {}
+    for _, ore in ipairs(ns.ORES) do
+        local n = 0
+        for _, count in pairs(counts[ore.key] or {}) do n = n + count end
+        if n > 0 then perOre[#perOre + 1] = ore.name .. " " .. n end
+    end
+    if #perOre > 0 then print("  By ore: " .. table.concat(perOre, ", ")) end
+    if WorldMapFrame and WorldMapFrame:IsShown() then
+        print(format("  World map: uiMapID %s, %d ore types drawn.", tostring(WorldMapFrame:GetMapID()),
+            #ns.MapOverlay.shown))
+    end
 end
 
 function commands.reset()
     ns.db.filter, ns.db.alerts, ns.db.scale, ns.db.position = "all", true, 1, nil
+    ns.db.mapOverlay = true
+    wipe(ns.db.mapOres)
+    ns.MapOverlay:Refresh()
     if ns.UI.frame then
         ns.UI.frame:SetScale(1)
         ns.UI.frame:ClearAllPoints()

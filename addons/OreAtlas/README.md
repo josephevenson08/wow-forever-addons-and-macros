@@ -3,9 +3,10 @@
 A mining reference for WoW Forever. One scrollable pane lists every ore you
 can mine. For each one it shows which color the ore is for you right now,
 the skill where it turns yellow, green and gray, and the zones to find it
-in. The pane also tracks your Mining skill.
+in. It can also shade where each ore spawns on the world map, and it
+tracks your Mining skill.
 
-Interface 16001 (WoW Forever). Version 0.1.0.
+Interface 16001 (WoW Forever). Version 0.2.0.
 
 <img src="../../docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
 
@@ -15,6 +16,12 @@ _The pane at Mining 142. This is a preview rendered from the addon's own layout 
 
 Copy the `OreAtlas` folder into
 `World of Warcraft\_forever_\Interface\AddOns\`, then restart the game.
+
+For node areas in every zone, also install **GatherMate2** and
+**GatherMate2_Data (Retail & Forever)** from CurseForge (their WoW Forever
+files), then import the data once: type `/gathermate`, open **Import**, and
+import Mining. Ore Atlas works without them, but then it only knows the spots
+you've mined yourself.
 
 ## The pane
 
@@ -41,12 +48,40 @@ Open it with `/ore` or from the minimap addon menu.
     225 gray".
   - Notes on special cases, like Ooze Covered versions or the Black Forge
     for Dark Iron.
-  - Zone buttons with level ranges. Click one to open the world map there
-    (not in combat). Hover for details.
+  - An **On map / Off map** switch for the world map (see below).
+  - Zone buttons. Click one to open the world map there (not in combat).
+    Hover for details.
 
-Zone buttons in gold are zones that WoW Forever mining guides name for that
-ore. The rest come from classic spawn data. A `*` marks the densest zones
-in classic data.
+With node data (see below), zone buttons list the zones where that ore
+really spawns, busiest first, with node counts like "Arathi Highlands 305".
+Without node data, they fall back to the researched lists: gold zones are
+named by WoW Forever mining guides, the rest come from classic spawn data,
+and a `*` marks the densest zones in classic data.
+
+## Ore areas on the world map
+
+Open the world map on a zone and Ore Atlas shades the areas where ore
+spawns. Each zone is cut into a 32 x 32 grid. Every square with nodes of an
+ore you care about is filled in that ore's color for you: orange, yellow,
+green or gray. The more nodes in a square, the stronger the shade. You get
+general areas at a glance instead of hundreds of icons.
+
+- **Which ores:** by default, the ores that still give you skill-ups
+  (orange, yellow or green), plus Heavy Thorium and Obsidian. Use the
+  **On map / Off map** switch on any ore card to pin it on or off.
+  `/ore map auto` goes back to the default.
+- **Map button:** the **Ore areas: on/off** button in the bottom-left
+  corner of the world map turns shading on or off. Hover it to see which
+  ores are drawn and how many nodes each has. Right-click it to open Ore
+  Atlas.
+- **Where the nodes come from:**
+  - **GatherMate2**, if it's installed. Ore Atlas reads GatherMate2's
+    Mining nodes from your own install while you play. It never copies or
+    ships that data.
+  - **Your own mining.** Every time you mine a node, Ore Atlas saves the
+    spot. Over time this fills in zones on its own, with or without
+    GatherMate2.
+- Zone maps only. Continent and world maps aren't shaded.
 
 ## Ores
 
@@ -80,9 +115,11 @@ starting zones only teach up to 75.
 | Command                  | What it does                                         |
 | ------------------------ | ---------------------------------------------------- |
 | `/ore`                   | Open or close the pane                               |
+| `/ore map [on\|off]`     | Ore areas on the world map (default on)              |
+| `/ore map auto`          | Forget your per-ore map picks                        |
 | `/ore alerts [on\|off]`  | Chat alerts when your best ore changes (default on)  |
 | `/ore scale 0.9`         | Pane size, 0.5 to 2                                  |
-| `/ore debug`             | Print what the game reports for Mining and the map   |
+| `/ore debug`             | Print Mining, map and node data the addon sees       |
 | `/ore reset`             | Reset settings and pane position                     |
 | `/ore help`              | List the commands                                    |
 
@@ -110,15 +147,19 @@ Redridge Mountains." You also get one when you hit a trainer cap.
 
 ## Saved data
 
-`OreAtlasDB` (account-wide) holds your filter, alert and scale settings,
-the pane position, and each character's Mining skill.
+`OreAtlasDB` (account-wide) holds your filter, alert, scale and map
+settings, the pane position, each character's Mining skill, and every spot
+you've mined.
 
 ## Status
 
 Not tested in game yet. On a first run:
 
-- Run `/ore debug`. It shows the raw profession data Forever returns and
-  any zones the map lookup couldn't find.
+- Run `/ore debug`. It shows the raw profession data Forever returns, any
+  zones the map lookup couldn't find, whether GatherMate2 was found, and
+  how many nodes it knows per ore.
+- Open the world map on a zone with ore (Durotar, Arathi Highlands) and
+  check that the shaded squares sit where the nodes are.
 - If the header says "not learned" on a character that has Mining, the
   debug output shows why.
 - Turn on `/console scriptErrors 1` to see any Lua errors.
@@ -131,4 +172,6 @@ Not tested in game yet. On a first run:
 | `Data.lua`  | Ores, zones, trainer ranks, skill colors                  |
 | `Skill.lua` | Reads and saves your Mining skill                         |
 | `Maps.lua`  | Finds a zone's map and opens the world map to it          |
+| `Nodes.lua` | Node data: reads GatherMate2, records what you mine       |
+| `MapOverlay.lua` | Shades ore areas on the world map, and the map button |
 | `UI.lua`    | The pane: header, filter, ore cards, zone buttons         |
