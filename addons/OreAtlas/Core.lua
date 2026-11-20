@@ -217,8 +217,12 @@ function commands.debug()
 
     ns.Nodes.dirty = true
     local counts = ns.Nodes:Counts()
-    print(format("  GatherMate2: %s. Nodes known: %d (you mined %d).",
-        ns.Nodes:HasGatherMate() and "found" or "not loaded", ns.Nodes.total or 0, ns.Nodes:OwnTotal()))
+    print(format("  GatherMate2: %s. GatherMate2_Data table: %s%s. Nodes known: %d (you mined %d).",
+        ns.Nodes:HasGatherMate() and "found" or "not loaded",
+        ns.Nodes:HasRawData() and "read" or "not available",
+        ns.Nodes.dataLoadResult and (" (load: " .. ns.Nodes.dataLoadResult .. ")") or "",
+        ns.Nodes.total or 0, ns.Nodes:OwnTotal()))
+    print("  Last mining cast: " .. ns.Nodes.lastCast)
     local perOre = {}
     for _, ore in ipairs(ns.ORES) do
         local n = 0

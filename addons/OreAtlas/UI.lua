@@ -66,30 +66,21 @@ local function ZoneLabel(zone)
     return label
 end
 
--- Zone buttons for an ore: real node counts (busiest first) when node data
--- exists, otherwise the researched zone list from Data.lua.
+-- Zone buttons for an ore. Zones with real node counts come first ("Arathi
+-- Highlands  305"); researched zones from Data.lua fill in until there's
+-- enough node data to trust (see Nodes:ZoneList).
 -- Each entry: { name, mapID?, label, color, lines = { {text, r, g, b}, ... } }
+local MAX_ZONES = 14
+
 local function ZoneEntries(ore)
     local entries = {}
-    local data = ns.Nodes:ZonesFor(ore.key)
-    if data then
-        for i, zone in ipairs(data) do
-            if i > 12 then break end
-            local info = ns.ZONES[zone.name]
-            local lines = { { zone.count .. " known nodes", 1, 1, 1 } }
-            if info and info.levels and not info.inside and not info.new then
-                lines[#lines + 1] = { "Levels " .. info.levels, 1, 1, 1 }
-            end
-            lines[#lines + 1] = { "From GatherMate2 data and spots you've mined", MUTED[1], MUTED[2], MUTED[3] }
-            entries[#entries + 1] = { name = zone.name, mapID = zone.mapID, label = zone.name .. "  " .. zone.count,
-                                      color = TAN, lines = lines }
-        end
-        return entries
-    end
-
-    for _, zone in ipairs(ore.zones) do
+    for _, zone in ipairs(ns.Nodes:ZoneList(ore)) do
+        if #entries >= MAX_ZONES then break end
         local info = ns.ZONES[zone.name] or {}
         local lines = {}
+        if zone.count then
+            lines[#lines + 1] = { zone.count .. " known nodes", 1, 1, 1 }
+        end
         if info.inside then
             lines[#lines + 1] = { "Inside " .. info.inside, 1, 1, 1 }
         elseif info.new then
@@ -97,14 +88,20 @@ local function ZoneEntries(ore)
         elseif info.levels then
             lines[#lines + 1] = { "Levels " .. info.levels, 1, 1, 1 }
         end
-        if zone.forever then
-            lines[#lines + 1] = { "Named by WoW Forever mining guides", GOLD[1], GOLD[2], GOLD[3] }
+        local label, color
+        if zone.count then
+            label, color = zone.name .. "  " .. zone.count, TAN
+            lines[#lines + 1] = { "From GatherMate2 data and spots you've mined", MUTED[1], MUTED[2], MUTED[3] }
         else
-            lines[#lines + 1] = { "From classic spawn data", MUTED[1], MUTED[2], MUTED[3] }
+            label, color = ZoneLabel(zone), zone.forever and GOLD or TAN
+            if zone.forever then
+                lines[#lines + 1] = { "Named by WoW Forever mining guides", GOLD[1], GOLD[2], GOLD[3] }
+            else
+                lines[#lines + 1] = { "From classic spawn data", MUTED[1], MUTED[2], MUTED[3] }
+            end
+            if zone.dense then lines[#lines + 1] = { "One of the densest zones for this ore", 1, 1, 1 } end
         end
-        if zone.dense then lines[#lines + 1] = { "One of the densest zones for this ore", 1, 1, 1 } end
-        entries[#entries + 1] = { name = zone.name, label = ZoneLabel(zone),
-                                  color = zone.forever and GOLD or TAN, lines = lines }
+        entries[#entries + 1] = { name = zone.name, mapID = zone.mapID, label = label, color = color, lines = lines }
     end
     return entries
 end
@@ -478,7 +475,7 @@ function UI:Refresh()
     self.alts:SetText(#alts > 0 and ("Other miners: " .. table.concat(alts, ", ")) or "")
 
     if ns.Nodes:HasGatherMate() or ns.Nodes:OwnTotal() > 0 then
-        self.legend:SetText("Zone numbers = known nodes (GatherMate2 + your mining)")
+        self.legend:SetText("Numbers = known nodes    " .. Colored("f2c14e", "Gold") .. " = named by Forever guides")
     else
         self.legend:SetText(Colored("f2c14e", "Gold") .. " = named by Forever guides    * = densest (classic data)")
     end

@@ -75,8 +75,10 @@ function ns.ColorFor(ore, skill, effective)
 end
 
 ---------------------------------------------------------------------------
--- Zones: classic level ranges, and uiMapIDs from the retail client to try
--- if looking the zone up by name fails. Dungeons open their outdoor zone.
+-- Zones: classic level ranges, and uiMapIDs to try if looking the zone up
+-- by name fails: Forever's classic-era IDs first (Tanaris is 1446, as in
+-- GatherMate2's Forever data), then retail IDs. Dungeons open their
+-- outdoor zone.
 ---------------------------------------------------------------------------
 
 local ZONES = {}
@@ -89,50 +91,50 @@ local function Zone(name, levels, ids, extra)
 end
 
 -- Kalimdor
-Zone("Durotar", "1-10", { 1 })
-Zone("Mulgore", "1-10", { 7 })
-Zone("Teldrassil", "1-10", { 57 })
+Zone("Durotar", "1-10", { 1411, 1 })
+Zone("Mulgore", "1-10", { 1412, 7 })
+Zone("Teldrassil", "1-10", { 1438, 57 })
 Zone("Zephras Isle", "new", nil, { new = true })
-Zone("Darkshore", "10-20", { 62 })
-Zone("The Barrens", "10-25", { 10 }, { alt = { "Northern Barrens" } })
-Zone("Stonetalon Mountains", "15-27", { 65 })
-Zone("Ashenvale", "18-30", { 63 })
-Zone("Thousand Needles", "25-35", { 64 })
-Zone("Desolace", "30-40", { 66 })
-Zone("Dustwallow Marsh", "35-45", { 70 })
-Zone("Feralas", "40-50", { 69 })
-Zone("Tanaris", "40-50", { 71 })
-Zone("Azshara", "45-55", { 76 })
-Zone("Felwood", "48-55", { 77 })
-Zone("Un'Goro Crater", "48-55", { 78 })
-Zone("Winterspring", "55-60", { 83 })
-Zone("Silithus", "55-60", { 81 })
+Zone("Darkshore", "10-20", { 1439, 62 })
+Zone("The Barrens", "10-25", { 1413, 10 }, { alt = { "Northern Barrens" } })
+Zone("Stonetalon Mountains", "15-27", { 1442, 65 })
+Zone("Ashenvale", "18-30", { 1440, 63 })
+Zone("Thousand Needles", "25-35", { 1441, 64 })
+Zone("Desolace", "30-40", { 1443, 66 })
+Zone("Dustwallow Marsh", "35-45", { 1445, 70 })
+Zone("Feralas", "40-50", { 1444, 69 })
+Zone("Tanaris", "40-50", { 1446, 71 })
+Zone("Azshara", "45-55", { 1447, 76 })
+Zone("Felwood", "48-55", { 1448, 77 })
+Zone("Un'Goro Crater", "48-55", { 1449, 78 })
+Zone("Winterspring", "55-60", { 1452, 83 })
+Zone("Silithus", "55-60", { 1451, 81 })
 Zone("Mount Hyjal", "60", { 198 })
 Zone("Riverglades", "new", nil, { new = true })
 Zone("Ahn'Qiraj", "raid", nil, { inside = "Silithus" })
 
 -- Eastern Kingdoms
-Zone("Elwynn Forest", "1-10", { 37 })
-Zone("Dun Morogh", "1-10", { 27 })
-Zone("Tirisfal Glades", "1-10", { 18 })
-Zone("Westfall", "10-20", { 52 })
-Zone("Loch Modan", "10-20", { 48 })
-Zone("Silverpine Forest", "10-20", { 21 })
-Zone("Redridge Mountains", "15-25", { 49 })
-Zone("Duskwood", "18-30", { 47 })
-Zone("Wetlands", "20-30", { 56 })
-Zone("Hillsbrad Foothills", "20-30", { 25 })
-Zone("Alterac Mountains", "30-40", nil, { alt = { "Hillsbrad Foothills" } })
-Zone("Arathi Highlands", "30-40", { 14 })
-Zone("Stranglethorn Vale", "30-45", { 224, 50 }, { alt = { "Northern Stranglethorn" } })
-Zone("Badlands", "35-45", { 15 })
-Zone("Swamp of Sorrows", "35-45", { 51 })
-Zone("The Hinterlands", "40-50", { 26 })
-Zone("Searing Gorge", "43-50", { 32 })
-Zone("Blasted Lands", "45-55", { 17 })
-Zone("Burning Steppes", "50-58", { 36 })
-Zone("Western Plaguelands", "51-58", { 22 })
-Zone("Eastern Plaguelands", "53-60", { 23 })
+Zone("Elwynn Forest", "1-10", { 1429, 37 })
+Zone("Dun Morogh", "1-10", { 1426, 27 })
+Zone("Tirisfal Glades", "1-10", { 1420, 18 })
+Zone("Westfall", "10-20", { 1436, 52 })
+Zone("Loch Modan", "10-20", { 1432, 48 })
+Zone("Silverpine Forest", "10-20", { 1421, 21 })
+Zone("Redridge Mountains", "15-25", { 1433, 49 })
+Zone("Duskwood", "18-30", { 1431, 47 })
+Zone("Wetlands", "20-30", { 1437, 56 })
+Zone("Hillsbrad Foothills", "20-30", { 1424, 25 })
+Zone("Alterac Mountains", "30-40", { 1416 }, { alt = { "Hillsbrad Foothills" } })
+Zone("Arathi Highlands", "30-40", { 1417, 14 })
+Zone("Stranglethorn Vale", "30-45", { 1434, 224, 50 }, { alt = { "Northern Stranglethorn" } })
+Zone("Badlands", "35-45", { 1418, 15 })
+Zone("Swamp of Sorrows", "35-45", { 1435, 51 })
+Zone("The Hinterlands", "40-50", { 1425, 26 })
+Zone("Searing Gorge", "43-50", { 1427, 32 })
+Zone("Blasted Lands", "45-55", { 1419, 17 })
+Zone("Burning Steppes", "50-58", { 1428, 36 })
+Zone("Western Plaguelands", "51-58", { 1422, 22 })
+Zone("Eastern Plaguelands", "53-60", { 1423, 23 })
 Zone("Uldaman", "dungeon", nil, { inside = "Badlands" })
 Zone("Blackrock Depths", "dungeon", nil, { inside = "Burning Steppes" })
 Zone("Blackrock Spire", "dungeon", nil, { inside = "Burning Steppes" })
@@ -307,7 +309,7 @@ end
 -- "Arathi Highlands, Alterac Mountains, Stranglethorn Vale". Uses real
 -- node counts (busiest first) when node data is available.
 function ns.TopZones(ore, count)
-    local list = (ns.Nodes and ns.Nodes:ZonesFor(ore.key)) or ore.zones
+    local list = ns.Nodes:ZoneList(ore)
     local names = {}
     for i = 1, math.min(count, #list) do names[i] = list[i].name end
     return table.concat(names, ", ")

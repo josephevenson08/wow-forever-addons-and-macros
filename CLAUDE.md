@@ -11,7 +11,13 @@ server.
   `C_Map`, `C_Timer`). Many legacy globals (`GetSpellInfo`, `GetItemInfo`,
   `GetAddOnMetadata`, ...) are gone.
 - Lua 5.1: no `goto`, `//`, bitwise operators, `require`, `io`, `os`.
-- Game folder on this machine: `D:\World of Warcraft\_forever_`.
+- Game folder on this machine: `C:\Blizzard main\World of Warcraft\_forever_`
+  (saved in the git-ignored `scripts\wow-path.local.txt`, which the scripts
+  read). `D:\World of Warcraft\_forever_` is a stub install that isn't played.
+  SavedVariables are under `WTF\Account\<account>\SavedVariables\`; read them
+  to see what an addon actually recorded in game.
+- Forever uses classic-era uiMapIDs (Durotar 1411 ... Winterspring 1452,
+  Tanaris 1446), plus new IDs for Forever zones (e.g. 2482, 2521, 2548, 2652).
 
 ## Hard limits (read docs/forever-api-notes.md before designing a feature)
 

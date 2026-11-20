@@ -2,7 +2,7 @@
 ## Title: Ore Atlas
 ## Notes: Where to mine every ore, which ores still give skill, ore areas on the world map, and your Mining progress.
 ## Author: Joseph Evenson
-## Version: 0.2.0
+## Version: 0.2.1
 ## SavedVariables: OreAtlasDB
 ## OptionalDeps: GatherMate2, GatherMate2_Data
 ## IconTexture: Interface\Icons\Trade_Mining

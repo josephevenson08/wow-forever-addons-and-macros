@@ -6,7 +6,7 @@ the skill where it turns yellow, green and gray, and the zones to find it
 in. It can also shade where each ore spawns on the world map, and it
 tracks your Mining skill.
 
-Interface 16001 (WoW Forever). Version 0.2.0.
+Interface 16001 (WoW Forever). Version 0.2.1.
 
 <img src="../../docs/screenshots/ore-atlas.png" width="420" alt="Ore Atlas pane at Mining 142: Iron is orange, Indurium and Gold are still too high">
 
@@ -19,9 +19,10 @@ Copy the `OreAtlas` folder into
 
 For node areas in every zone, also install **GatherMate2** and
 **GatherMate2_Data (Retail & Forever)** from CurseForge (their WoW Forever
-files), then import the data once: type `/gathermate`, open **Import**, and
-import Mining. Ore Atlas works without them, but then it only knows the spots
-you've mined yourself.
+files). You don't need to import anything: Ore Atlas reads GatherMate2_Data's
+Forever Mining table directly, or GatherMate2's database if you did import
+it. Ore Atlas works without them, but then it only knows the spots you've
+mined yourself.
 
 ## The pane
 

@@ -6,7 +6,7 @@ mode on the modern client (interface 16001).
 | Addon | What it does | Open with | Version |
 | ----- | ------------ | --------- | ------- |
 | [Wyvern Wits](addons/WyvernWits) | Reverse-trivia minigame on flight paths: rarer valid answers send an 8-bit Thrall diving deeper | `/wits`, or it opens on takeoff | 0.1.0 |
-| [Ore Atlas](addons/OreAtlas) | Mining reference: every ore's skill colors, where to find it, ore areas on the world map, and your Mining progress | `/ore` | 0.2.0 |
+| [Ore Atlas](addons/OreAtlas) | Mining reference: every ore's skill colors, where to find it, ore areas on the world map, and your Mining progress | `/ore` | 0.2.1 |
 
 Neither addon has been tested in game yet. If you hit a Lua error, turn on
 `/console scriptErrors 1` and open an issue with the error text.

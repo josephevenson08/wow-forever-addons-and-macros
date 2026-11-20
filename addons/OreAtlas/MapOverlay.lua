@@ -109,7 +109,8 @@ function Overlay:CreateButton()
     local anchor = WorldMapFrame.ScrollContainer or WorldMapFrame
     local b = CreateFrame("Button", nil, WorldMapFrame)
     b:SetSize(130, 22)
-    b:SetPoint("BOTTOMLEFT", anchor, "BOTTOMLEFT", 8, 8)
+    -- raised off the corner, where coordinate addons put their text
+    b:SetPoint("BOTTOMLEFT", anchor, "BOTTOMLEFT", 8, 36)
     b:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 500)
     b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     local bg = b:CreateTexture(nil, "BACKGROUND")
@@ -145,7 +146,8 @@ function Overlay:CreateButton()
             GameTooltip:AddLine("No ore areas to show on this map.", 1, 1, 1)
         end
         if ns.Nodes:HasGatherMate() then
-            GameTooltip:AddLine("Node data: GatherMate2 plus spots you've mined.", 0.66, 0.6, 0.47, true)
+            GameTooltip:AddLine(format("Node data: GatherMate2%s plus spots you've mined.",
+                ns.Nodes:HasRawData() and " and GatherMate2_Data" or ""), 0.66, 0.6, 0.47, true)
         else
             GameTooltip:AddLine("Showing only spots you've mined. Install GatherMate2 and GatherMate2_Data for every zone.", 0.66, 0.6, 0.47, true)
         end
